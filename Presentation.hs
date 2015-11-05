@@ -1,19 +1,26 @@
-import           Data.Char
-import           Numeric
+{-# LANGUAGE DeriveAnyClass #-}
+{-# LANGUAGE DeriveGeneric  #-}
 
--- data Dollar = Dollar Double deriving (Eq)
--- data Dollar = Dollar Double deriving (Ord, Eq)
--- data Dollar = Dollar Double deriving (Show, Ord, Eq)
+import Data.Aeson
+import Data.Char
+import GHC.Generics
+import Numeric
 
--- instance Show Dollar where
---   show (Dollar d) = "$" ++ showGFloat (Just 2) d ""
-data Dollar = Dollar Double String deriving (Eq, Ord)
+
+data Dollar = Dollar { amount :: Double, currency :: Currency }
+  deriving (Eq, Generic, ToJSON, FromJSON)
+
+data Currency = USD | EUR | GBP
+  deriving (Show, Eq, Generic, ToJSON, FromJSON)
 
 instance Show Dollar where
   show (Dollar d currency) =
-    "$" ++ showGFloat (Just 2) d "" ++ " in " ++ map toUpper currency
+    "$" ++ showGFloat (Just 2) d "" ++ " in " ++ show currency
 
-main = do
-  putStrLn $ "stuff"
-  -- putStrLn $ show (Dollar 1.0)
+-- to be able to add Dollar's we'd need
+-- to define a type instance for Num
+-- instance Num Dollar b => Num (a -> b) where
+--   (+) = _
 
+main = print(encode(Dollar 2.35 USD))
+-- "{"amount": "2.35", "currency": "USD"}"
